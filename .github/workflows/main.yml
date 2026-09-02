@@ -1,33 +1,11 @@
-name: Deploy and Open
+deployment:
+  trigger: push
 
-on:
-  push:
-    
 
-jobs:
   deploy:
-    runs-on: ubuntu-latest
+    command: npm run build
+    output: dist/
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Deploy to Vercel
-        id: deploy
-        run: |
-          npm install -g vercel
-          URL=$(vercel --prod --token="${{ secrets.VERCEL_TOKEN }}" --yes)
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-
-      - name: Show Deployment URL
-        run: |
-          echo "🚀 Deployment completed!"
-          echo "🌐 ${{ steps.deploy.outputs.url }}"
-
-      - name: Open deployed page
-        run: |
-          echo "Opening: ${{ steps.deploy.outputs.url }}"
-          xdg-open "${{ steps.deploy.outputs.url }}" || true
+  page:
+    url: https://your-deployment-url.com
+    open: true
