@@ -1,26 +1,33 @@
-name: CI/CD Pipeline
+name: Deploy and Open
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - main
+    
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run tests
-        run: echo "Running tests..."
+      - name: Install dependencies
+        run: npm install
 
-      - name: Build
-        run: echo "Building project..."
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          npm install -g vercel
+          URL=$(vercel --prod --token="${{ secrets.VERCEL_TOKEN }}" --yes)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy
-        run: echo "Deploying application..."
+      - name: Show Deployment URL
+        run: |
+          echo "🚀 Deployment completed!"
+          echo "🌐 ${{ steps.deploy.outputs.url }}"
+
+      - name: Open deployed page
+        run: |
+          echo "Opening: ${{ steps.deploy.outputs.url }}"
+          xdg-open "${{ steps.deploy.outputs.url }}" || true
